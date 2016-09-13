@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Recife Guide</string>
+    <string name="appFacebook_id">172490979824465</string>
+    <string name="error_login">Erro no login</string>
+    <string name="cancel_login">Login Cancelado</string>
+    <string name="logout">Encerrar Sessão</string>
 </resources>
