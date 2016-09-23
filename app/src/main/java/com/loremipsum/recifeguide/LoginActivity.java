@@ -1,32 +1,17 @@
 package com.loremipsum.recifeguide;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.Profile;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import org.json.JSONObject;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 
@@ -68,15 +53,15 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void goMainScreen( ) {
-        Profile perfil = com.facebook.Profile.getCurrentProfile();
-        String nome = perfil.getName();
-        String id = perfil.getId();
+        //Profile perfil = com.facebook.Profile.getCurrentProfile();
+        //String nome = perfil.getName();
+        //String id = perfil.getId();
 
-        Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+        Intent intent = new Intent(this,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("NOME",nome.toString());
-        intent.putExtra("ID",id);
-        intent.putExtra("EMAIL",email);
+        //intent.putExtra("NOME",nome.toString());
+        //intent.putExtra("ID",id);
+        //intent.putExtra("EMAIL",email);
         startActivity(intent);
     }
 
