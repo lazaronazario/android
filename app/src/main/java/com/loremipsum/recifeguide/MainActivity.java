@@ -17,8 +17,14 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback {
     String id;
     String nome;
     String email;
@@ -26,10 +32,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView txtNome;
     TextView txtEmail;
 
+    @BindView(R.id.map)
+    GoogleMap map;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         if (AccessToken.getCurrentAccessToken() == null){
             goLoginScreen();
@@ -64,6 +76,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
     }
 
     @Override
@@ -156,4 +176,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         goLoginScreen();
     }
 
- }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        /*map.addMarker(new MarkerOptions()
+                .position(new LatLng(0, 0))
+                .title("Marker"));*/
+
+    }
+}
