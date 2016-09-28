@@ -11,8 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //ppf = (ProfilePictureView) findViewById(R.id.fbProfilePicture);
         //ppf.setProfileId(id);
 
-        //txtNome = (TextView) findViewById(nome);
+        //txtNome = (TextView) findViewById(R.id.meu_nome);
         //txtNome.setText("Bem Vindo " + nome);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.home) {
+        /*if (id == R.id.home) {
             // Handle the camera action
         } else if (id == R.id.rotas_turisticas) {
 
@@ -114,6 +114,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.outros_destinos) {
 
         } else if (id == R.id.logout) {
+
+        }*/
+
+        switch (id){
+            case R.id.home:
+                //abrirFragment();
+                break;
+            case R.id.rotas_turisticas:
+
+                break;
+            case R.id.ao_meu_redor:
+
+                break;
+            case R.id.outros_destinos:
+                Toast.makeText(this, "Foi clicado", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(this, CategoriaLocalActivity.class);
+                startActivity(i);
+                break;
+            case R.id.logout:
+                this.logout();
+
+                break;
 
         }
 
@@ -129,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    public void logout(View view) {
+    public void logout() {
         LoginManager.getInstance().logOut();
         goLoginScreen();
     }
