@@ -30,6 +30,7 @@ public class CategoriaLocaisAdapter extends BaseAdapter {
     }
 
 
+
     @Override
     public int getCount() {
         return result.length;

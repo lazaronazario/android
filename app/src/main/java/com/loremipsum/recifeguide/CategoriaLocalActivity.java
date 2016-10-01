@@ -40,6 +40,7 @@ public class CategoriaLocalActivity extends AppCompatActivity implements Cliquei
             R.drawable.volkswagen,
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,7 @@ public class CategoriaLocalActivity extends AppCompatActivity implements Cliquei
 
          initViews();
     }
+
 
         private void initViews() {
         gridView = (GridView) findViewById(R.id.gridview);
