@@ -4,13 +4,16 @@
     android:id="@+id/activity_categoria_local"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.loremipsum.recifeguide.CategoriaLocalActivity">
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/card_recycler_view"
-        android:scrollbars="vertical"
+    <GridView
+        android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:numColumns="auto_fit">
+    </GridView>
 
 </RelativeLayout>
+

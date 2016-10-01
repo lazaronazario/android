@@ -1,66 +1,80 @@
 package com.loremipsum.recifeguide;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.loremipsum.recifeguide.model.CategoriaLocal;
-
-import java.util.List;
+import android.widget.Toast;
 
 /**
  * Created by BREVE DEUS VEM on 24/09/2016.
  */
 
-public class CategoriaLocaisAdapter extends RecyclerView.Adapter<CategoriaLocaisAdapter.MeuViewHolder> {
+public class CategoriaLocaisAdapter extends BaseAdapter {
 
-    private List<CategoriaLocal> categoriaLocals;
-    private Context context;
+    String [] result;
+    Context context;
+    int [] imageId;
+    private static LayoutInflater inflater=null;
+    public CategoriaLocaisAdapter(CategoriaLocalActivity categoriaLocalActivity, String[] countries, int[] flags) {
+        // TODO Auto-generated constructor stub
+        result=countries;
+        context=categoriaLocalActivity;
+        imageId=flags;
+        inflater = ( LayoutInflater )context.
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    public CategoriaLocaisAdapter(List<CategoriaLocal> categoriaLocais) {
-    }
-
-    public class MeuViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView nome;
-        public ImageView imgCatLocal;
-
-        public MeuViewHolder(View view) {
-            super(view);
-            nome = (TextView) view.findViewById(R.id.nomeCategoria);
-            imgCatLocal = (ImageView) view.findViewById(R.id.imgCategoria);
-        }
     }
 
 
-    public CategoriaLocaisAdapter(Context context,List<CategoriaLocal> categoriaLocals) {
-        this.categoriaLocals = categoriaLocals;
-        this.context = context;
+    @Override
+    public int getCount() {
+        return result.length;
     }
 
     @Override
-    public MeuViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_categoria_local, parent, false);
-
-        return new MeuViewHolder(itemView);
+    public Object getItem(int position) {
+        return position;
     }
 
     @Override
-    public void onBindViewHolder(MeuViewHolder holder, int position) {
-        CategoriaLocal categoriaLocal = categoriaLocals.get(position);
-        holder.nome.setText(categoriaLocal.getNome());
-        Glide.with(context).load(categoriaLocals.get(position)).into(holder.imgCatLocal);
+    public long getItemId(int position) {
+        return position;
+    }
+
+    public class Holder
+    {
+        TextView nome;
+        ImageView img;
     }
 
     @Override
-    public int getItemCount() {
-        return categoriaLocals.size();
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        // TODO Auto-generated method stub
+        Holder holder=new Holder();
+        View rowView;
+
+        rowView = inflater.inflate(R.layout.gridview_layout, null);
+        holder.nome =(TextView) rowView.findViewById(R.id.nomeCategoria);
+        holder.img=(ImageView) rowView.findViewById(R.id.imgCategoria);
+
+        holder.nome.setText(result[position]);
+        holder.img.setImageResource(imageId[position]);
+
+        rowView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Toast.makeText(context, "You Clicked "+result[position], Toast.LENGTH_LONG).show();
+            }
+        });
+
+        return rowView;
     }
+
 }
 
