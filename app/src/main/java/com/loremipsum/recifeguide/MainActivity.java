@@ -1,9 +1,13 @@
 package com.loremipsum.recifeguide;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,14 +21,26 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.loremipsum.recifeguide.util.AppConstants;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     String id;
     String nome;
     String email;
@@ -32,10 +48,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView txtNome;
     TextView txtEmail;
 
-    @BindView(R.id.map)
+
+    GoogleApiClient mGoogleApiClient;
+    Location mLastLocation;
+    MapFragment mapFragment;
     GoogleMap map;
-
-
+    Marker userMarker;
+    boolean  mRequestingLocationUpdates = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,46 +62,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        if (AccessToken.getCurrentAccessToken() == null){
+        if (AccessToken.getCurrentAccessToken() == null) {
             goLoginScreen();
         }
 
         nome = getIntent().getStringExtra("NOME");
         email = getIntent().getStringExtra("EMAIL");
         id = getIntent().getStringExtra("ID");
-        //ppf = (ProfilePictureView) findViewById(R.id.fbProfilePicture);
-        //ppf.setProfileId(id);
 
-        //txtNome = (TextView) findViewById(R.id.meu_nome);
-        //txtNome.setText("Bem Vindo " + nome);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer,toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+      /*  NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);*/
 
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
+         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        getLastLocation();
+
+        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+
+    private Location getLastLocation()
+    {
+
+        Location location = null;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    AppConstants.REQUEST_FINE_LOCATION);
+
+            return null;
+        }
+
+        location = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        return location;
+    }
+    @Override
+    public void onConnectionSuspended(int i) {
 
     }
 
@@ -102,6 +149,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+
+    protected void stopLocationUpdates() {
+
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+        mRequestingLocationUpdates = false;
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -178,10 +259,105 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        map.setMinZoomPreference(5);
+        map.setMaxZoomPreference(25);
+      //  mLastLocation = getLastLocation();
 
-        /*map.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));*/
+      //  if (mLastLocation != null) {
+      //      updateLocation(mLastLocation);
+     //   }
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case AppConstants.REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+
+                    Location location = getLastLocation();
+
+                    if (location != null) {
+                        updateLocation(location);
+                    }
+
+
+                    if (!mRequestingLocationUpdates )
+                    {
+
+                        startLocationUpdates();
+                    }
+                } else {
+
+                   Toast.makeText(this, "O aplicativo precisa da permissão de localização para rodar corretamente.", Toast.LENGTH_LONG);
+                }
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+
+    protected void startLocationUpdates() {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    AppConstants.REQUEST_FINE_LOCATION);
+
+        }
+        LocationRequest mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(5 * 1000)        // 5 seconds, in milliseconds
+                .setFastestInterval(5 * 1000); // 1 second, in milliseconds
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+
+        mRequestingLocationUpdates = true;
+    }
+
+    private void updateLocation(Location location)
+    {
+
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        if (userMarker == null)
+        {
+            userMarker =  map.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("Eu"));
+
+        }
+        else {
+            userMarker.setPosition(latLng);
+        }
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+
+      map.moveCamera(cameraUpdate);
+
+
+        mLastLocation = location;
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+
+        if (location != null)
+        updateLocation(location);
 
     }
 }

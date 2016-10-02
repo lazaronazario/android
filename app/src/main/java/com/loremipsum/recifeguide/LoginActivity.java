@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -31,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = (LoginButton) findViewById(R.id.fbLogin);
         loginButton.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_friends"));
+
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -48,20 +50,23 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+       if (isLoggedIn()){
+            this.goMainScreen();
+
+        }
+    }
+
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
     }
 
 
-
     private void goMainScreen( ) {
-        //Profile perfil = com.facebook.Profile.getCurrentProfile();
-        //String nome = perfil.getName();
-        //String id = perfil.getId();
 
         Intent intent = new Intent(this,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        //intent.putExtra("NOME",nome.toString());
-        //intent.putExtra("ID",id);
-        //intent.putExtra("EMAIL",email);
+
         startActivity(intent);
     }
 
