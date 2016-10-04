@@ -39,7 +39,17 @@
 
         <activity
             android:name=".CategoriaLocalActivity"
-            android:label="Categoria Local">
+            android:label="Categoria Local"
+            android:parentActivityName=".MainActivity">
+            <meta-data android:name="parentActivityName" android:value=".MainActivity"/>
+
+        </activity>
+
+        <activity
+            android:name=".LocalActivity"
+            android:label="Lista de Locais"
+            android:parentActivityName=".CategoriaLocalActivity">
+            <meta-data android:name="parentActivityName" android:value=".CategoriaLocalActivity"/>
 
         </activity>
 

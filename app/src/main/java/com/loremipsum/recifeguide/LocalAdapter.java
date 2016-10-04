@@ -9,19 +9,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Created by BREVE DEUS VEM on 24/09/2016.
+ * Created by BREVE DEUS VEM on 01/10/2016.
  */
 
-public class CategoriaLocaisAdapter extends BaseAdapter {
+public class LocalAdapter extends BaseAdapter {
 
     String [] result;
     Context context;
     int [] imageId;
     private static LayoutInflater inflater=null;
-    public CategoriaLocaisAdapter(CategoriaLocalActivity categoriaLocalActivity, String[] countries, int[] flags) {
+    public LocalAdapter(LocalActivity localActivity, String[] countries, int[] flags) {
         // TODO Auto-generated constructor stub
         result=countries;
-        context=categoriaLocalActivity;
+        context=localActivity;
         imageId=flags;
         inflater = ( LayoutInflater )context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -54,12 +54,12 @@ public class CategoriaLocaisAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
-        Holder holder=new Holder();
+        Holder holder = new Holder();
         View rowView;
 
-        rowView = inflater.inflate(R.layout.gridview_layout, null);
-        holder.nome =(TextView) rowView.findViewById(R.id.nomeCategoria);
-        holder.img=(ImageView) rowView.findViewById(R.id.imgCategoria);
+        rowView = inflater.inflate(R.layout.item_local, null);
+        holder.nome =(TextView) rowView.findViewById(R.id.nome_local);
+        holder.img=(ImageView) rowView.findViewById(R.id.imgLocal);
 
         holder.nome.setText(result[position]);
         holder.img.setImageResource(imageId[position]);
@@ -77,4 +77,3 @@ public class CategoriaLocaisAdapter extends BaseAdapter {
     }
 
 }
-

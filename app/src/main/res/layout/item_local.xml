@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="54dp"
         android:layout_height="58dp"
-        android:id="@+id/imgCategoria" />
+        android:id="@+id/imgLocal" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Large Text"
-            android:id="@+id/nomeCategoria"
+            android:id="@+id/nome_local"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp" />
     </LinearLayout>

@@ -1,43 +1,51 @@
 package com.loremipsum.recifeguide;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.loremipsum.recifeguide.model.CategoriaLocal;
+import com.loremipsum.recifeguide.util.CategoriaLocal;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoriaLocalActivity extends AppCompatActivity implements CliqueiNaCategoriaListener{
+public class CategoriaLocalActivity extends AppCompatActivity{
 
     private ArrayList<CategoriaLocal> categoriaLocais = new ArrayList<>();
     private CategoriaLocaisAdapter mAdapter;
     private GridView gridView;
 
     public CategoriaLocalActivity(List<CategoriaLocal> categoriaLocais){
-        
+
         this.categoriaLocais = (ArrayList<CategoriaLocal>) categoriaLocais;
     }
 
     public CategoriaLocalActivity(){
 
-
     }
     // Array of strings storing country names
     String[] countries ={
-            "Chevrolet",
-            "Fiat",
-            "Ford",
-            "Volkswagen",
+            "Museu",
+            "Teatro",
+            "Mercado Publico",
+            "Feira Livre",
+            "Pontes",
+            "Compras",
+            "Sem Categoria",
     };
 
     // Array of integers points to images stored in /res/drawable-ldpi/
     int[] flags ={
-            R.drawable.chevrolet,
-            R.drawable.fiat,
-            R.drawable.ford,
-            R.drawable.volkswagen,
+            R.drawable.museu,
+            R.drawable.teatro,
+            R.drawable.mercadopublico,
+            R.drawable.feiralivre,
+            R.drawable.pontes,
+            R.drawable.compras,
+            R.drawable.semcategoria,
     };
 
 
@@ -48,16 +56,20 @@ public class CategoriaLocalActivity extends AppCompatActivity implements Cliquei
 
          initViews();
     }
-
-
         private void initViews() {
         gridView = (GridView) findViewById(R.id.gridview);
         mAdapter = new CategoriaLocaisAdapter(this,countries, flags);
         gridView.setAdapter(mAdapter);
+
+
+           gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    mAdapter.getItem(position);
+                    Intent intent = new Intent(parent.getContext(), LocalActivity.class);
+                    startActivity(intent);
+                }
+            });
     }
 
-    @Override
-    public void CategoriaFoiClicada(CategoriaLocal categoriaLocal) {
-
-    }
 }

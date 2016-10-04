@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-      /*  NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);*/
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
 
          mapFragment = (MapFragment) getFragmentManager()
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.outros_destinos:
-                Toast.makeText(this, "Foi clicado", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Foi clicado", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(this, CategoriaLocalActivity.class);
                 startActivity(i);
                 break;
