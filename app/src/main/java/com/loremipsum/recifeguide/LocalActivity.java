@@ -60,7 +60,6 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
         locais.add(c);
         locais.add(d);*/
 
-        //gridView = (GridView) findViewById(R.id.gridview);
         mListView =  (ListView) findViewById(R.id.list_view);
         mAdapter = new LocalAdapter(this, countries, flags);
         mListView.setAdapter(mAdapter);
