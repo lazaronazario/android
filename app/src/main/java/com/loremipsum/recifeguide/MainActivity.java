@@ -91,35 +91,21 @@ public class MainActivity extends AppCompatActivity
             if (AccessToken.getCurrentAccessToken() == null){
                 goLoginScreen();
             }
-            accessToken = AccessToken.getCurrentAccessToken();
-            GraphRequest request = GraphRequest.newMeRequest(
-                    accessToken,
-                    new GraphRequest.GraphJSONObjectCallback() {
-                        @Override
-                        public void onCompleted(
-                                JSONObject object,
-                                GraphResponse response) {
-                            email = object.optString("email");
-                            editor.putString("EMAIL",email);
-                            editor.commit();
-                        }
-                    });
-
-            nome = sharedPreferences.getString("NOME","");
+                  nome = sharedPreferences.getString("NOME","");
             email = sharedPreferences.getString("EMAIL","");
             id = sharedPreferences.getString("ID","");
             //ppf = (ProfilePictureView) findViewById(R.id.fbProfilePicture);
-            ppf.setVisibility(View.VISIBLE);
-            ppf.setProfileId(id);
+            //ppf.setVisibility(View.VISIBLE);
+            //ppf.setProfileId(id);
 
             //txtNome = (TextView) findViewById(R.id.nome);
-            txtNome.setText("Bem Vindo " + nome );
+            //txtNome.setText("Bem Vindo " + nome );
         }else if(strTipoLogin.equals(Login_Google)){
             nome = getIntent().getStringExtra("NOME");
             email = getIntent().getStringExtra("EMAIL");
             uriFotoGoogle = Uri.parse(sharedPreferences.getString("FOTO",""));
             //txtNome = (TextView) findViewById(R.id.nome);
-            txtNome.setText("Bem Vindo " + nome + "   " + email);
+            //txtNome.setText("Bem Vindo " + nome + "   " + email);
 
         }
 

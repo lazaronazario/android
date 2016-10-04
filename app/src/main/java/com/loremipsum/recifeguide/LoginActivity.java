@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,6 +13,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.LoggingBehavior;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
@@ -24,6 +27,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
 import java.util.Arrays;
 
 
@@ -53,7 +60,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
         if (status == 1 && tipoLogin.equals("F")) {
-            goMainScreenFacebook();
+            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+            startActivity(intent);
         }else if (status == 1 && tipoLogin.equals("G")){
             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
             startActivity(intent);
@@ -76,13 +84,33 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         loginButton.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_friends"));
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-
-
             @Override
             public void onSuccess(LoginResult loginResult) {
 
+                Log.v("profile track", (DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(loginResult.getAccessToken().getExpires())));
+                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                try {
 
-                goMainScreenFacebook();
+                                    String name = object.getString("name");
+                                    String email = object.getString("email");
+                                    String id = object.getString("id");
+                                   goMainScreenFacebook(name,id,email);
+
+                    /*write  your code  that is to be executed after successful login*/
+
+
+                                } catch (JSONException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,gender, birthday");
+                request.setParameters(parameters);
+                request.executeAsync();
             }
 
 
@@ -118,26 +146,26 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         });
     }
 
-    private void goMainScreenFacebook() {
-        Profile perfil = com.facebook.Profile.getCurrentProfile();
-        String nome = perfil.getName();
-        String id = perfil.getId();
+    private void goMainScreenFacebook(String p_nome,String p_id, String p_email) {
+        //Profile perfil = com.facebook.Profile.getCurrentProfile();
+        //String nome = perfil.getName();
+        //String id = perfil.getId();
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("STATUS",1);
         editor.putString("TIPO","F");
-        editor.putString("NOME",nome.toString());
-        editor.putString("ID",id);
-        editor.putString("EMAIL",email);
+        editor.putString("NOME",p_nome);
+        editor.putString("ID",p_id);
+        editor.putString("EMAIL",p_email);
         editor.commit();
 
 
         Intent intent = new Intent(LoginActivity.this,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("NOME",nome.toString());
-        intent.putExtra("ID",id);
-        intent.putExtra("EMAIL",email);
+        intent.putExtra("NOME",p_nome.toString());
+        intent.putExtra("ID",p_id);
+        intent.putExtra("EMAIL",p_email);
 
         startActivity(intent);
 
