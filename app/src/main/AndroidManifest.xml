@@ -34,30 +34,29 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CategoriaLocalActivity"
             android:label="Categoria Local"
             android:parentActivityName=".MainActivity">
-            <meta-data android:name="parentActivityName" android:value=".MainActivity"/>
-
+            <meta-data
+                android:name="parentActivityName"
+                android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".LocalActivity"
             android:label="Lista de Locais"
             android:parentActivityName=".CategoriaLocalActivity">
-            <meta-data android:name="parentActivityName" android:value=".CategoriaLocalActivity"/>
-
+            <meta-data
+                android:name="parentActivityName"
+                android:value=".CategoriaLocalActivity" />
         </activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/appFacebook_id" />
 
-        <activity android:name=".LocalDetalheActivity"></activity>
+        <activity android:name=".LocalDetalheActivity" />
     </application>
 
 </manifest>
