@@ -34,20 +34,16 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CategoriaLocalActivity"
-            android:label="Categoria Local">
-
-        </activity>
+            android:label="Categoria Local"></activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/appFacebook_id" />
 
-        <activity android:name=".LocalDetalheActivity"></activity>
+        <activity android:name=".LocalDetalheActivity" />
     </application>
 
 </manifest>

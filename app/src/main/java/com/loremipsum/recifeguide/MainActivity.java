@@ -2,8 +2,10 @@ package com.loremipsum.recifeguide;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,10 +17,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 import com.google.android.gms.common.ConnectionResult;
@@ -34,20 +39,34 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.loremipsum.recifeguide.util.AppConstants;
+
+import org.json.JSONObject;
 
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    private static final String PREF_NAME = "LoginPreference";
     String id;
     String nome;
     String email;
     ProfilePictureView ppf;
     TextView txtNome;
     TextView txtEmail;
-
+    private static final String Login_Google ="G";
+    private static final String Login_Facebook ="F";
+    String strTipoLogin;
+    Uri uriFotoGoogle;
+    Usuario usuario;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    String retorno;
+    String envioJson;
+    Gson gson;
+    AccessToken accessToken;
 
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
@@ -62,13 +81,47 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        if (AccessToken.getCurrentAccessToken() == null) {
-            goLoginScreen();
-        }
+        sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        strTipoLogin = sharedPreferences.getString("TIPO","");
 
-        nome = getIntent().getStringExtra("NOME");
-        email = getIntent().getStringExtra("EMAIL");
-        id = getIntent().getStringExtra("ID");
+        enviarUsuario();
+
+        if(strTipoLogin.equals(Login_Facebook)){
+            if (AccessToken.getCurrentAccessToken() == null){
+                goLoginScreen();
+            }
+            accessToken = AccessToken.getCurrentAccessToken();
+            GraphRequest request = GraphRequest.newMeRequest(
+                    accessToken,
+                    new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(
+                                JSONObject object,
+                                GraphResponse response) {
+                            email = object.optString("email");
+                            editor.putString("EMAIL",email);
+                            editor.commit();
+                        }
+                    });
+
+            nome = sharedPreferences.getString("NOME","");
+            email = sharedPreferences.getString("EMAIL","");
+            id = sharedPreferences.getString("ID","");
+            //ppf = (ProfilePictureView) findViewById(R.id.fbProfilePicture);
+            ppf.setVisibility(View.VISIBLE);
+            ppf.setProfileId(id);
+
+            //txtNome = (TextView) findViewById(R.id.nome);
+            txtNome.setText("Bem Vindo " + nome );
+        }else if(strTipoLogin.equals(Login_Google)){
+            nome = getIntent().getStringExtra("NOME");
+            email = getIntent().getStringExtra("EMAIL");
+            uriFotoGoogle = Uri.parse(sharedPreferences.getString("FOTO",""));
+            //txtNome = (TextView) findViewById(R.id.nome);
+            txtNome.setText("Bem Vindo " + nome + "   " + email);
+
+        }
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -246,6 +299,21 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void enviarUsuario(){
+        try {
+            usuario = new Usuario();
+            usuario.setNome(sharedPreferences.getString("NOME",""));
+            usuario.setSocialId(sharedPreferences.getString("ID",""));
+            usuario.setEmail(sharedPreferences.getString("EMAIL","Nao Encontrado"));
+            gson = new Gson();
+            envioJson = gson.toJson(usuario);
+            AcessoRest acessoRest = new AcessoRest();
+            retorno = acessoRest.get("fnInserirUsuario/" + usuario.getNome() + "," + usuario.getEmail() + "," + usuario.getSocialId());
+        }catch (Exception e){
+
+        }
+    }
+
     private void goLoginScreen() {
         Intent intent = new Intent(this,LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -254,6 +322,10 @@ public class MainActivity extends AppCompatActivity
 
     public void logout() {
         LoginManager.getInstance().logOut();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear().commit();
+
         goLoginScreen();
     }
 
