@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "181690891695",
+    "project_id": "firebase-recife-guide"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181690891695:android:875695bfd66f9557",
+        "android_client_info": {
+          "package_name": "com.loremipsum.recifeguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "181690891695-25mqgs0eqn4tbo13s38tkijs3l9vkhu1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.loremipsum.recifeguide",
+            "certificate_hash": "CB2CC03AB7EAA4BF7FBB21AA21D74C3654521188"
+          }
+        },
+        {
+          "client_id": "181690891695-gej1lsk40675q11uv2lb7l3qvj6ahnfa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClcdGqbvrypaWrBwIZjGdpPl91R4hAhnk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
