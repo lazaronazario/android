@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
     String envioJson;
     Gson gson;
     AccessToken accessToken;
-
+    String strVerificado;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     MapFragment mapFragment;
@@ -84,16 +84,20 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
         editor = sharedPreferences.edit();
         strTipoLogin = sharedPreferences.getString("TIPO","");
+        strVerificado = sharedPreferences.getString("Verificado","");
 
-        enviarUsuario();
 
         if(strTipoLogin.equals(Login_Facebook)){
             if (AccessToken.getCurrentAccessToken() == null){
                 goLoginScreen();
             }
-                  nome = sharedPreferences.getString("NOME","");
+            nome = sharedPreferences.getString("NOME","");
             email = sharedPreferences.getString("EMAIL","");
             id = sharedPreferences.getString("ID","");
+            if (strVerificado.equals("OK") == false){
+                enviarUsuario();
+            }
+
             //ppf = (ProfilePictureView) findViewById(R.id.fbProfilePicture);
             //ppf.setVisibility(View.VISIBLE);
             //ppf.setProfileId(id);
@@ -104,6 +108,9 @@ public class MainActivity extends AppCompatActivity
             nome = getIntent().getStringExtra("NOME");
             email = getIntent().getStringExtra("EMAIL");
             uriFotoGoogle = Uri.parse(sharedPreferences.getString("FOTO",""));
+            if (strVerificado.equals("OK") == false){
+                enviarUsuario();
+            }
             //txtNome = (TextView) findViewById(R.id.nome);
             //txtNome.setText("Bem Vindo " + nome + "   " + email);
 
@@ -295,6 +302,8 @@ public class MainActivity extends AppCompatActivity
             envioJson = gson.toJson(usuario);
             AcessoRest acessoRest = new AcessoRest();
             retorno = acessoRest.get("fnInserirUsuario/" + usuario.getNome() + "," + usuario.getEmail() + "," + usuario.getSocialId());
+            editor.putString("VERIFICADO","OK");
+            editor.commit();
         }catch (Exception e){
 
         }

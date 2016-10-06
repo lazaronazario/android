@@ -57,7 +57,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         int status = sharedPreferences.getInt("STATUS", 0);
         String tipoLogin = sharedPreferences.getString("TIPO", "");
-
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear().commit();
 
         if (status == 1 && tipoLogin.equals("F")) {
             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
@@ -182,7 +183,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         editor.putString("NOME",usuario.getDisplayName());
         editor.putString("ID",usuario.getId());
         editor.putString("EMAIL",usuario.getEmail());
-        editor.putString("FOTO",usuario.getPhotoUrl().toString());
+        //editor.putString("FOTO",usuario.getPhotoUrl().toString());
         editor.commit();
 
         intent.putExtra("NOME",usuario.getDisplayName());
