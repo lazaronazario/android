@@ -1,5 +1,6 @@
 package com.loremipsum.recifeguide.model;
 
+import com.google.gson.annotations.SerializedName;
 import com.loremipsum.recifeguide.EntidadeBase;
 import com.loremipsum.recifeguide.util.TipoIdioma;
 
@@ -8,9 +9,15 @@ import com.loremipsum.recifeguide.util.TipoIdioma;
  */
 public class LocalDetalhes extends EntidadeBase{
 
+    @SerializedName("Nome")
     private String nome;
+
+    @SerializedName("TipoIdioma")
     private TipoIdioma tipoIdioma;
+
+    @SerializedName("Descricao")
     private String descricao;
+
     private Local local;
 
     public LocalDetalhes(){

@@ -9,4 +9,5 @@ import java.util.ArrayList;
 public class ContainerLocais {
 
     public ArrayList<Local> locais;
+
 }

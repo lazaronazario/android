@@ -12,8 +12,8 @@ import okhttp3.Response;
  * Created by Dannyllo on 28/09/2016.
  */
 public class AcessoRest {
-    private final String IP = "192.168.1.16";
-    private final String PORT = "";
+    private final String IP = "10.0.0.102";
+    //private final String PORT = "";
     private StringBuilder url;
 
 

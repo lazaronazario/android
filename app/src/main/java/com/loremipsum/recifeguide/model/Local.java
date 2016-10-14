@@ -1,5 +1,6 @@
 package com.loremipsum.recifeguide.model;
 
+import com.google.gson.annotations.SerializedName;
 import com.loremipsum.recifeguide.EntidadeBase;
 import com.loremipsum.recifeguide.util.CategoriaLocal;
 
@@ -12,13 +13,28 @@ import java.util.ArrayList;
 
 public class Local extends EntidadeBase {
 
+    @SerializedName("Latitude")
     private double lat;
+
+    @SerializedName("Longitude")
     private double lng;
+
+    @SerializedName("Imagem")
     private String imagem;
+
+    //@SerializedName("HorarioIniFuncionamento")
     private Timestamp horarioInicio;
+
+    //@SerializedName("HorarioFimFuncionamento")
     private Timestamp horarioFim;
+
+    @SerializedName("ApenasDiaUtil")
     private boolean apenasDiaUtil;
+
+    @SerializedName("CategoriaLocal")
     private CategoriaLocal categoriaLocal;
+
+    @SerializedName("LocalDetalhes")
     private ArrayList<LocalDetalhes> listaDetalhes;
 
 
