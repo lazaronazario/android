@@ -22,10 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -41,8 +41,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.loremipsum.recifeguide.util.AppConstants;
-
-import org.json.JSONObject;
 
 import butterknife.ButterKnife;
 
@@ -74,12 +72,32 @@ public class MainActivity extends AppCompatActivity
     GoogleMap map;
     Marker userMarker;
     boolean  mRequestingLocationUpdates = false;
+    FloatingActionMenu menuFab;
+    FloatingActionButton rotaPreDefinida, criarRota;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        menuFab = (FloatingActionMenu) findViewById(R.id.fab);
+        rotaPreDefinida = (FloatingActionButton) findViewById(R.id.rotaPre);
+        criarRota = (FloatingActionButton) findViewById(R.id.criarRota);
+
+
+        rotaPreDefinida.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), " Vai mostrar a rota pre definita no mapa", Toast.LENGTH_SHORT).show();
+            }
+        });
+        criarRota.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), CategoriaLocalActivity.class);
+                startActivity(i);
+
+            }
+        });
 
         sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
         editor = sharedPreferences.edit();

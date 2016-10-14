@@ -8,6 +8,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="categoria_local">Categoria Local</string>
+    <string name="criarRota">Criar minha rota</string>
+    <string name="rotaPreDefinida">Rota pré-definida</string>
+    <string name="opcoesDeRota">Escolha sua opção</string>
 
 
     <string name="action_settings">Settings</string>
