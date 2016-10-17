@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,11 +38,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.loremipsum.recifeguide.model.ContainerLocais;
+import com.loremipsum.recifeguide.model.Local;
 import com.loremipsum.recifeguide.util.AppConstants;
+import com.loremipsum.recifeguide.util.CategoriaLocal;
 
 import butterknife.ButterKnife;
 
@@ -352,6 +358,8 @@ public class MainActivity extends AppCompatActivity
       //  if (mLastLocation != null) {
       //      updateLocation(mLastLocation);
      //   }
+
+        loadLocationsOnMap();
     }
 
 
@@ -444,5 +452,98 @@ public class MainActivity extends AppCompatActivity
         if (location != null)
         updateLocation(location);
 
+    }
+
+    public void loadLocationsOnMap()
+    {
+        AcessoRest acessoRest = new AcessoRest();
+        String json = acessoRest.get("fnConsultaLocais");
+       // Log.d("TryRest",json);
+        json = "{\n" +
+                "    \"locais\":[\n" +
+                "        {           \n" +
+                "            \"StatusRegistro\":1,\n" +
+                "            \"CategoriaLocal\":1,\n" +
+                "            \"ApenasDiaUtil\":false,\n" +
+                "            \"HorarioFimFuncionamento\":\"1326439500\",\n" +
+                "            \"HorarioIniFuncionamento\":\"1326439500\",\n" +
+                "            \"Imagem\":\"uploads//teatro.png\",\n" +
+                "            \"Longitude\":\"-34.943281\",\n" +
+                "            \"Latitude\":\"-8.080913\",\n" +
+                "            \"IdLocal\":376,\n" +
+                "            \"LocalDetalhes\":[\n" +
+                "                {\n" +
+                "                    \"IdLocal\":376,\n" +
+                "                    \"StatusRegistro\":1,\n" +
+                "                    \"Descricao\":\"...\",\n" +
+                "                    \"TipoIdioma\":0,\n" +
+                "                    \"Nome\":\"Teatro Rio Mar\",\n" +
+                "                    \"IdLocalDetalhes\":173\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"IdLocal\":376,\n" +
+                "                    \"StatusRegistro\":1,\n" +
+                "                    \"Descricao\":\"...\",\n" +
+                "                    \"TipoIdioma\":0,\n" +
+                "                    \"Nome\":\"Teatro Rio Mar\",\n" +
+                "                    \"IdLocalDetalhes\":176\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n," +
+                "        {           \n" +
+                "            \"StatusRegistro\":1,\n" +
+                "            \"CategoriaLocal\":2,\n" +
+                "            \"ApenasDiaUtil\":false,\n" +
+                "            \"HorarioFimFuncionamento\":\"\",\n" +
+                "            \"HorarioIniFuncionamento\":\"\",\n" +
+                "            \"Imagem\":\"uploads//teatro.png\",\n" +
+                "            \"Longitude\":\"-34.9452793\",\n" +
+                "            \"Latitude\":\"-8.0816934\",\n" +
+                "            \"IdLocal\":376,\n" +
+                "            \"LocalDetalhes\":[\n" +
+                "                {\n" +
+                "                    \"IdLocal\":376,\n" +
+                "                    \"StatusRegistro\":1,\n" +
+                "                    \"Descricao\":\"...\",\n" +
+                "                    \"TipoIdioma\":0,\n" +
+                "                    \"Nome\":\"Rua Marilia\",\n" +
+                "                    \"IdLocalDetalhes\":173\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"IdLocal\":376,\n" +
+                "                    \"StatusRegistro\":1,\n" +
+                "                    \"Descricao\":\"...\",\n" +
+                "                    \"TipoIdioma\":0,\n" +
+                "                    \"Nome\":\"Teatro Rio Mar\",\n" +
+                "                    \"IdLocalDetalhes\":176\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    \n" +
+                "    ]\n" +
+                "\n" +
+                "}\n";
+
+        Gson gson = new Gson();
+        ContainerLocais containerLocais = gson.fromJson(json, ContainerLocais.class);
+
+        for(Local local: containerLocais.locais){
+
+            LatLng latLng = new LatLng(local.getLat(), local.getLng());
+
+            Marker localMarker =  map.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(local.getNome()));
+            localMarker.setIcon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(local.getCategoriaLocal().toString().toLowerCase(),50,50)));
+            localMarker.setPosition(latLng);
+
+        }
+
+    }
+
+    public Bitmap resizeMapIcons(String iconName, int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
     }
 }
