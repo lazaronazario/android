@@ -432,12 +432,13 @@ public class MainActivity extends AppCompatActivity
                     .title("Eu")
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_user",100,100))));
 
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-            map.moveCamera(cameraUpdate);
         }
         else {
             userMarker.setPosition(latLng);
         }
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+        map.moveCamera(cameraUpdate);
 
         mLastLocation = location;
 
