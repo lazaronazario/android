@@ -38,7 +38,9 @@ public class AcessoRest {
 
 
                 Response response = client.newCall(request).execute();
-                return response.body().string();
+
+
+                return tratarJson(response.body().string());
 
         }catch (Exception e){
             e.printStackTrace();
@@ -68,13 +70,21 @@ public class AcessoRest {
 
 
             Response response = client.newCall(request).execute();
-            return response.body().string();
+            return tratarJson(response.body().string());
 
         }catch (Exception e){
             e.printStackTrace();
         }
         //HttpClient httpClient = new DefaultHttpClient();
         return "";
+    }
+
+    public String tratarJson(String json)
+    {
+        json = json.substring(1);
+        json = json.substring(0, json.length() - 1);
+        json = json.replace("\\","");
+        return json;
     }
 
 }

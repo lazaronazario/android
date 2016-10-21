@@ -25,8 +25,8 @@ public class EnumHelper {
             case MUSEU:
                 desc = "Museu";
                 break;
-            case PONTE:
-                desc = "Ponte";
+            case PONTES:
+                desc = "Pontes";
                 break;
             case TEATRO:
                 desc = "Teatro";

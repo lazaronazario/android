@@ -1,5 +1,7 @@
 package com.loremipsum.recifeguide.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 /**
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 
 public class ContainerLocais {
 
+    @SerializedName("Locais")
     public ArrayList<Local> locais;
 
 }

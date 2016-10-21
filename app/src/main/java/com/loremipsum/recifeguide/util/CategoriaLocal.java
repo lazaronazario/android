@@ -18,7 +18,7 @@ public enum CategoriaLocal {
     @SerializedName("4")
     FEIRALIVRE(4),
     @SerializedName("5")
-    PONTE(5),
+    PONTES(5),
     @SerializedName("6")
     COMPRAS(6);
 
