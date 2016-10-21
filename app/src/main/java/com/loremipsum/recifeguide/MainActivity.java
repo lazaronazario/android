@@ -475,19 +475,20 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(ContainerLocais containerLocais) {
 
-            for(Local local: containerLocais.locais){
+            if(containerLocais != null) {
+                for (Local local : containerLocais.locais) {
 
-                LatLng latLng = new LatLng(local.getLat(), local.getLng());
+                    LatLng latLng = new LatLng(local.getLat(), local.getLng());
 
-                Marker localMarker =  map.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title(local.getNome()));
+                    Marker localMarker = map.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(local.getNome()));
 
-                localMarker.setIcon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(local.getCategoriaLocal().toString().toLowerCase(),50,50)));
-                localMarker.setPosition(latLng);
+                    localMarker.setIcon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(local.getCategoriaLocal().toString().toLowerCase(), 50, 50)));
+                    localMarker.setPosition(latLng);
 
+                }
             }
-
         }
     }
 
