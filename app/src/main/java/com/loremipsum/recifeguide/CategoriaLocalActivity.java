@@ -8,10 +8,11 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.loremipsum.recifeguide.model.Local;
+import com.loremipsum.recifeguide.util.CategoriaLocal;
 
 import java.util.ArrayList;
 
-public class CategoriaLocalActivity extends AppCompatActivity{
+public class CategoriaLocalActivity extends AppCompatActivity implements CliqueiNaCategoriaListener{
 
     //private ContainerLocais containerLocais;
     //private ArrayList<Local> locais;
@@ -52,7 +53,6 @@ public class CategoriaLocalActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categoria_local);
-        new ConsultaLocaisTask().execute();
 
         initViews();
     }
@@ -66,10 +66,15 @@ public class CategoriaLocalActivity extends AppCompatActivity{
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     mAdapter.getItem(position);
-                    Intent intent = new Intent(parent.getContext(), LocalActivity2.class);
-                    //intent.putExtra("locais", locais);
+                    //Toast.makeText(getBaseContext(), "Foi clicado", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(parent.getContext(), LocalActivity.class);
                     startActivity(intent);
                 }
             });
+    }
+
+    @Override
+    public void CategoriaFoiClicada(CategoriaLocal categoriaLocal) {
+
     }
 }

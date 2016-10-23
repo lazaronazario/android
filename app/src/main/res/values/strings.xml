@@ -11,6 +11,7 @@
     <string name="criarRota">Criar minha rota</string>
     <string name="rotaPreDefinida">Rota pré-definida</string>
     <string name="opcoesDeRota">Escolha sua opção</string>
+    <string name="carregarLocais">nao foi possivel carregar locais</string>
 
 
     <string name="action_settings">Settings</string>

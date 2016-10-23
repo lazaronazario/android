@@ -4,12 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp"
-    tools:context="com.loremipsum.recifeguide.LocalAdapter2">
+    android:padding="8dp">
 
     <ImageView
-        android:layout_width="54dp"
-        android:layout_height="58dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:id="@+id/imgLocal" />
 
     <LinearLayout
@@ -25,7 +24,8 @@
             android:text="Large Text"
             android:id="@+id/nome_local"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            android:textSize="18sp" />
     </LinearLayout>
 
 </LinearLayout>

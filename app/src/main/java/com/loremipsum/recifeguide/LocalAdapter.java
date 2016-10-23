@@ -4,76 +4,68 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.loremipsum.recifeguide.model.Local;
+
+import java.util.ArrayList;
+
 /**
- * Created by BREVE DEUS VEM on 01/10/2016.
+ * Created by BREVE DEUS VEM on 20/10/2016.
  */
 
-public class LocalAdapter extends BaseAdapter {
-
-    String [] result;
-    Context context;
-    int [] imageId;
-    private static LayoutInflater inflater=null;
-    public LocalAdapter(LocalActivity localActivity, String[] countries, int[] flags) {
-        // TODO Auto-generated constructor stub
-        result=countries;
-        context=localActivity;
-        imageId=flags;
-        inflater = ( LayoutInflater )context.
-                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-    }
+public class LocalAdapter extends ArrayAdapter<Local> {
 
 
+    public LocalAdapter(Context context, ArrayList<Local> locais) {
+        super(context, 0, locais);
 
-    @Override
-    public int getCount() {
-        return result.length;
     }
 
     @Override
-    public Object getItem(int position) {
-        return position;
-    }
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    public class Holder
-    {
-        TextView nome;
-        ImageView img;
-    }
-
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
-        Holder holder = new Holder();
-        View rowView;
-
-        rowView = inflater.inflate(R.layout.item_local, null);
-        holder.nome =(TextView) rowView.findViewById(R.id.nome_local);
-        holder.img=(ImageView) rowView.findViewById(R.id.imgLocal);
-
-        holder.nome.setText(result[position]);
-        holder.img.setImageResource(imageId[position]);
-
-        /*rowView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                //Toast.makeText(context, "You Clicou "+result[position], Toast.LENGTH_LONG).show();
+        //Local local = getItem(position);
+        //locais.get(position);
+        //ViewHolder viewHolder;
+        if (convertView == null) {
+            if (getContext() != null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_local, parent, false);
             }
-        });*/
+            /*viewHolder = new ViewHolder(convertView);
+        }else{
+            viewHolder = (ViewHolder) convertView.getTag();
+        }*/
 
-        return rowView;
+
+
+            //String nome = local.getListaDetalhes().get(position).getNome();
+            //Glide.with(getContext()).load(local.getImagem()).into(viewHolder.imagemLocal);
+            //viewHolder.nomeLocal.setText(local.getListaDetalhes().get(position).getNome());
+
+            //return convertView;
+        }
+        Local local = getItem(position);
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.imgLocal);
+        TextView textView = (TextView) convertView.findViewById(R.id.nome_local);
+
+        Glide.with(this.getContext()).load(local.getImagem()).into(imageView);
+        textView.setText(local.getNome());
+        return convertView;
+    /*static class ViewHolder{
+
+        @BindView(R.id.imgLocal)
+        ImageView imagemLocal;
+        @BindView(R.id.nome_local)
+        TextView nomeLocal;
+
+        public ViewHolder(View parent) {
+            ButterKnife.bind(this, parent);
+            parent.setTag(this);
+        }
+    }*/
     }
-
 }
