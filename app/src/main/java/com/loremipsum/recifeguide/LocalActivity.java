@@ -13,8 +13,6 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
     private LocalAdapter mAdapter;
 
 
-
-
     // Array of strings storing country names
     String[] countries ={
             "Museu",
@@ -47,24 +45,10 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
     }
 
     private void initViews() {
-
-        /*ArrayList<Local> locais = new ArrayList<Local>();
-
-        Local a = new Local(R.drawable.chevrolet, "Chevrolet");
-        Local b = new Local(R.drawable.fiat, "Fiat");
-        Local c = new Local(R.drawable.volkswagen, "Volkswagen");
-        Local d = new Local(R.drawable.ford, "Ford");
-
-        locais.add(a);
-        locais.add(b);
-        locais.add(c);
-        locais.add(d);*/
-
         mListView =  (ListView) findViewById(R.id.list_view);
         mAdapter = new LocalAdapter(this, countries, flags);
         mListView.setAdapter(mAdapter);
     }
-
 
 
     @Override

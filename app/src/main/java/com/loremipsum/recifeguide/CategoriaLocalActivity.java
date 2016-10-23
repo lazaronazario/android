@@ -7,20 +7,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.loremipsum.recifeguide.util.CategoriaLocal;
+import com.loremipsum.recifeguide.model.Local;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CategoriaLocalActivity extends AppCompatActivity{
 
-    private ArrayList<CategoriaLocal> categoriaLocais = new ArrayList<>();
+    //private ContainerLocais containerLocais;
+    //private ArrayList<Local> locais;
     private CategoriaLocaisAdapter mAdapter;
     private GridView gridView;
 
-    public CategoriaLocalActivity(List<CategoriaLocal> categoriaLocais){
+    public CategoriaLocalActivity(ArrayList<Local> locais){
 
-        this.categoriaLocais = (ArrayList<CategoriaLocal>) categoriaLocais;
     }
 
     public CategoriaLocalActivity(){
@@ -53,8 +52,9 @@ public class CategoriaLocalActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categoria_local);
+        new ConsultaLocaisTask().execute();
 
-         initViews();
+        initViews();
     }
         private void initViews() {
         gridView = (GridView) findViewById(R.id.gridview);
@@ -66,10 +66,10 @@ public class CategoriaLocalActivity extends AppCompatActivity{
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     mAdapter.getItem(position);
-                    Intent intent = new Intent(parent.getContext(), LocalActivity.class);
+                    Intent intent = new Intent(parent.getContext(), LocalActivity2.class);
+                    //intent.putExtra("locais", locais);
                     startActivity(intent);
                 }
             });
     }
-
 }

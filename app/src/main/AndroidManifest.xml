@@ -12,7 +12,7 @@
     <application
         android:name=".RecifeGuideApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_navigation_black_24dp"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -45,6 +45,14 @@
         </activity>
         <activity
             android:name=".LocalActivity"
+            android:label="Lista de Locais"
+            android:parentActivityName=".CategoriaLocalActivity">
+            <meta-data
+                android:name="parentActivityName"
+                android:value=".CategoriaLocalActivity" />
+        </activity>
+        <activity
+            android:name=".LocalActivity2"
             android:label="Lista de Locais"
             android:parentActivityName=".CategoriaLocalActivity">
             <meta-data

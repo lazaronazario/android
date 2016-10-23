@@ -47,7 +47,6 @@ import com.google.gson.Gson;
 import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
 import com.loremipsum.recifeguide.util.AppConstants;
-import com.loremipsum.recifeguide.util.CategoriaLocal;
 
 import butterknife.ButterKnife;
 
@@ -276,18 +275,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        /*if (id == R.id.home) {
-            // Handle the camera action
-        } else if (id == R.id.rotas_turisticas) {
-
-        } else if (id == R.id.ao_meu_redor) {
-
-        } else if (id == R.id.outros_destinos) {
-
-        } else if (id == R.id.logout) {
-
-        }*/
 
         switch (id){
             case R.id.home:

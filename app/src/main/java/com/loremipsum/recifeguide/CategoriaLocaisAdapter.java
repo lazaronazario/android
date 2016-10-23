@@ -18,6 +18,7 @@ public class CategoriaLocaisAdapter extends BaseAdapter {
     Context context;
     int [] imageId;
     private static LayoutInflater inflater=null;
+
     public CategoriaLocaisAdapter(CategoriaLocalActivity categoriaLocalActivity, String[] countries, int[] flags) {
         // TODO Auto-generated constructor stub
         result=countries;
@@ -60,6 +61,7 @@ public class CategoriaLocaisAdapter extends BaseAdapter {
         rowView = inflater.inflate(R.layout.gridview_layout, null);
         holder.nome =(TextView) rowView.findViewById(R.id.nomeCategoria);
         holder.img=(ImageView) rowView.findViewById(R.id.imgCategoria);
+
 
         holder.nome.setText(result[position]);
         holder.img.setImageResource(imageId[position]);
