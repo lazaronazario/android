@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
 import com.loremipsum.recifeguide.util.CategoriaLocal;
+import com.loremipsum.recifeguide.util.EnumHelper;
 
 import java.util.ArrayList;
 
@@ -36,6 +37,9 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
         CategoriaLocal categoria = (CategoriaLocal) intent.getSerializableExtra("categoriaLocal");
         //Toast.makeText(getBaseContext(), categoria.toString(), Toast.LENGTH_SHORT).show();
         filtroCategoria = categoria;
+
+
+        getSupportActionBar().setTitle("Lista de "+ EnumHelper.ObterDescricao(categoria));
 
         if (mLocais.size() == 0 && mTask == null) {
             mTask = new ConsultaLocaisTask();
