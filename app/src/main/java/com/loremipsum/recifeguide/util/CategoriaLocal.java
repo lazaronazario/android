@@ -2,11 +2,13 @@ package com.loremipsum.recifeguide.util;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by BREVE DEUS VEM on 02/10/2016.
  */
 
-public enum CategoriaLocal {
+public enum CategoriaLocal implements Serializable{
     @SerializedName("0")
     SEMCATEGORIA(0),
     @SerializedName("1")

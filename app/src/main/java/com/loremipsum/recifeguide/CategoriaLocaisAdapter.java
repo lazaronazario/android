@@ -8,22 +8,25 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.loremipsum.recifeguide.util.CategoriaLocal;
+import com.loremipsum.recifeguide.util.EnumHelper;
+
 /**
  * Created by BREVE DEUS VEM on 24/09/2016.
  */
 
 public class CategoriaLocaisAdapter extends BaseAdapter {
 
-    String [] result;
+    Enum [] result;
     Context context;
     int [] imageId;
     private static LayoutInflater inflater=null;
 
-    public CategoriaLocaisAdapter(CategoriaLocalActivity categoriaLocalActivity, String[] countries, int[] flags) {
+    public CategoriaLocaisAdapter(CategoriaLocalActivity categoriaLocalActivity, Enum[] categoria, int[] imgsCategorias) {
         // TODO Auto-generated constructor stub
-        result=countries;
+        result=categoria;
         context=categoriaLocalActivity;
-        imageId=flags;
+        imageId=imgsCategorias;
         inflater = ( LayoutInflater )context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -63,7 +66,7 @@ public class CategoriaLocaisAdapter extends BaseAdapter {
         holder.img=(ImageView) rowView.findViewById(R.id.imgCategoria);
 
 
-        holder.nome.setText(result[position]);
+        holder.nome.setText(EnumHelper.ObterDescricao((CategoriaLocal) result[position]));
         holder.img.setImageResource(imageId[position]);
 
         /*rowView.setOnClickListener(new View.OnClickListener() {

@@ -7,10 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.loremipsum.recifeguide.model.Local;
 import com.loremipsum.recifeguide.util.CategoriaLocal;
-
-import java.util.ArrayList;
 
 public class CategoriaLocalActivity extends AppCompatActivity implements CliqueiNaCategoriaListener{
 
@@ -19,26 +16,18 @@ public class CategoriaLocalActivity extends AppCompatActivity implements Cliquei
     private CategoriaLocaisAdapter mAdapter;
     private GridView gridView;
 
-    public CategoriaLocalActivity(ArrayList<Local> locais){
-
-    }
-
-    public CategoriaLocalActivity(){
-
-    }
-    // Array of strings storing country names
-    String[] countries ={
-            "Museu",
-            "Teatro",
-            "Mercado Publico",
-            "Feira Livre",
-            "Pontes",
-            "Compras",
-            "Sem Categoria",
+    Enum[] categoriaLocal ={
+            CategoriaLocal.MUSEU,
+            CategoriaLocal.TEATRO,
+            CategoriaLocal.MERCADOPUBLICO,
+            CategoriaLocal.FEIRALIVRE,
+            CategoriaLocal.PONTES,
+            CategoriaLocal.COMPRAS,
+            CategoriaLocal.SEMCATEGORIA
     };
 
     // Array of integers points to images stored in /res/drawable-ldpi/
-    int[] flags ={
+    int[] imgsCategoria ={
             R.drawable.museu,
             R.drawable.teatro,
             R.drawable.mercadopublico,
@@ -58,7 +47,7 @@ public class CategoriaLocalActivity extends AppCompatActivity implements Cliquei
     }
         private void initViews() {
         gridView = (GridView) findViewById(R.id.gridview);
-        mAdapter = new CategoriaLocaisAdapter(this,countries, flags);
+        mAdapter = new CategoriaLocaisAdapter(this, categoriaLocal, imgsCategoria);
         gridView.setAdapter(mAdapter);
 
 
@@ -66,8 +55,12 @@ public class CategoriaLocalActivity extends AppCompatActivity implements Cliquei
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     mAdapter.getItem(position);
+
+                    Enum categoria = categoriaLocal[position];
                     //Toast.makeText(getBaseContext(), "Foi clicado", Toast.LENGTH_SHORT).show();
+
                     Intent intent = new Intent(parent.getContext(), LocalActivity.class);
+                    intent.putExtra("categoriaLocal", categoria);
                     startActivity(intent);
                 }
             });

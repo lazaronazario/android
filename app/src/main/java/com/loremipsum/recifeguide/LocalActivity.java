@@ -1,6 +1,7 @@
 package com.loremipsum.recifeguide;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
+import com.loremipsum.recifeguide.util.CategoriaLocal;
 
 import java.util.ArrayList;
 
@@ -22,6 +24,7 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
     private LocalAdapter mAdapter;
     private ArrayList<Local> mLocais = new ArrayList<>();
     ConsultaLocaisTask mTask;
+    Enum filtroCategoria;
 
 
     @Override
@@ -29,11 +32,16 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local);
 
+        Intent intent = getIntent();
+        CategoriaLocal categoria = (CategoriaLocal) intent.getSerializableExtra("categoriaLocal");
+        //Toast.makeText(getBaseContext(), categoria.toString(), Toast.LENGTH_SHORT).show();
+        filtroCategoria = categoria;
+
         if (mLocais.size() == 0 && mTask == null) {
             mTask = new ConsultaLocaisTask();
             mTask.execute();
         }else if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING){
-            carregarFilmes();
+            carregarLocais();
         }else {
             Toast.makeText(this, R.string.carregarLocais, Toast.LENGTH_LONG).show();
         }
@@ -78,14 +86,16 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
             mLocais.clear();
             if (containerLocais != null) {
                 for (Local local : containerLocais.locais) {
-                    mLocais.add(local);
+                    if (filtroCategoria == local.getCategoriaLocal()){
+                        mLocais.add(local);
+                   }
                 }
                 mAdapter.notifyDataSetChanged();
             }
         }
     }
 
-    private void carregarFilmes() {
+    private void carregarLocais() {
 
         ConnectivityManager connMgr = (ConnectivityManager)
                 this.getSystemService(Context.CONNECTIVITY_SERVICE);
