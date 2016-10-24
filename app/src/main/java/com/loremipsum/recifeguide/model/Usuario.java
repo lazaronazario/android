@@ -1,4 +1,4 @@
-package com.loremipsum.recifeguide;
+package com.loremipsum.recifeguide.model;
 
 /**
  * Created by Dannyllo on 30/09/2016.

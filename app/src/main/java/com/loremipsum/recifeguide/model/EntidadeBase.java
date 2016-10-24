@@ -1,7 +1,9 @@
-package com.loremipsum.recifeguide;
+package com.loremipsum.recifeguide.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.loremipsum.recifeguide.util.StatusRegistro;
+
+import static android.R.attr.id;
 
 /**
  *
@@ -9,25 +11,10 @@ import com.loremipsum.recifeguide.util.StatusRegistro;
  */
 public abstract class EntidadeBase {
 
-    @SerializedName("IdLocal")
-    private int id;
+
 
     @SerializedName("StatusRegistro")
     private StatusRegistro statusRegistro;
-
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
 
     /**
      * @return the statusRegistro
