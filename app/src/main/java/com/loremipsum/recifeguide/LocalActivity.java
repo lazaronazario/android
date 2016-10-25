@@ -7,6 +7,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -56,6 +58,16 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
         mListView = (ListView) findViewById(R.id.list_view);
         mAdapter = new LocalAdapter(this, mLocais);
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Local local = mLocais.get(i);
+                Intent it = new Intent(getBaseContext(), LocalDetalheActivity.class);
+                it.putExtra("nome",local.getNome());
+                it.putExtra("descricao",local.getDescricao());
+                startActivity(it);
+            }
+        });
     }
 
 

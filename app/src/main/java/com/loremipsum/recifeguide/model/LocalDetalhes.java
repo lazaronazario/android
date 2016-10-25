@@ -1,7 +1,7 @@
 package com.loremipsum.recifeguide.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.loremipsum.recifeguide.EntidadeBase;
+import com.loremipsum.recifeguide.model.EntidadeBase;
 import com.loremipsum.recifeguide.util.TipoIdioma;
 
 /**

@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
+import com.loremipsum.recifeguide.model.Usuario;
 import com.loremipsum.recifeguide.util.AppConstants;
 
 import butterknife.ButterKnife;
