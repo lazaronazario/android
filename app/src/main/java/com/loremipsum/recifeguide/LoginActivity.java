@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -16,7 +15,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.LoggingBehavior;
-import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -73,6 +71,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
 
 
+
+     /*   Intent intentXD = new Intent(LoginActivity.this,MainActivity.class);
+
+        startActivity(intentXD );*/
     }
 
     private void signInFacebook(){
@@ -123,6 +125,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             @Override
             public void onError(FacebookException error) {
+                Log.d("facebook erro", error.getMessage());
+
                 Toast.makeText(getApplicationContext(),R.string.error_login, Toast.LENGTH_SHORT).show();
             }
         });

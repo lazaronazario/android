@@ -9,6 +9,7 @@ import com.loremipsum.recifeguide.util.TipoIdioma;
  */
 public class LocalDetalhes extends EntidadeBase{
 
+
     @SerializedName("Nome")
     private String nome;
 

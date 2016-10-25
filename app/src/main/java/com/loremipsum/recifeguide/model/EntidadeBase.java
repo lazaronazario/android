@@ -3,8 +3,6 @@ package com.loremipsum.recifeguide.model;
 import com.google.gson.annotations.SerializedName;
 import com.loremipsum.recifeguide.util.StatusRegistro;
 
-import static android.R.attr.id;
-
 /**
  *
  * @author Christian

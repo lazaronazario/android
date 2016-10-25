@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class Local extends EntidadeBase {
 
     @SerializedName("IdLocal")
-    private double id;
+    private int id;
 
     @SerializedName("Latitude")
     private double lat;
@@ -51,7 +51,7 @@ public class Local extends EntidadeBase {
     }
 
     public Local(int id) {
-        this.setId(id);
+        this.id = id;
         this.listaDetalhes = new ArrayList<>();
     }
 
@@ -192,11 +192,11 @@ public class Local extends EntidadeBase {
         this.listaDetalhes = listaDetalhes;
     }
 
-    public void setId(double id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public double getId() {
+    public int getId() {
         return id;
     }
 
@@ -250,4 +250,15 @@ public class Local extends EntidadeBase {
     public void setLocalDetalhes(LocalDetalhes localDetalhes) {
         this.localDetalhes = localDetalhes;
     }*/
+
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return o!=null &&
+                (o instanceof  Local) &&
+                ((Local)o).id == this.id;
+
+    }
+
 }

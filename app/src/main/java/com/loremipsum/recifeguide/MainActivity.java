@@ -1,6 +1,8 @@
 package com.loremipsum.recifeguide;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -47,6 +49,7 @@ import com.google.gson.Gson;
 import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
 import com.loremipsum.recifeguide.model.Usuario;
+import com.loremipsum.recifeguide.tasks.CarregarRotaTask;
 import com.loremipsum.recifeguide.util.AppConstants;
 
 import butterknife.ButterKnife;
@@ -61,8 +64,8 @@ public class MainActivity extends AppCompatActivity
     ProfilePictureView ppf;
     TextView txtNome;
     TextView txtEmail;
-    private static final String Login_Google ="G";
-    private static final String Login_Facebook ="F";
+    private static final String Login_Google = "G";
+    private static final String Login_Facebook = "F";
     String strTipoLogin;
     Uri uriFotoGoogle;
     Usuario usuario;
@@ -76,11 +79,13 @@ public class MainActivity extends AppCompatActivity
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     MapFragment mapFragment;
-    GoogleMap map;
+    public GoogleMap map;
     Marker userMarker;
-    boolean  mRequestingLocationUpdates = false;
+    boolean mRequestingLocationUpdates = false;
     FloatingActionMenu menuFab;
     FloatingActionButton rotaPreDefinida, criarRota;
+    public static boolean isOnRoute = false;
+    ProgressDialog progress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +96,28 @@ public class MainActivity extends AppCompatActivity
         menuFab = (FloatingActionMenu) findViewById(R.id.fab);
         rotaPreDefinida = (FloatingActionButton) findViewById(R.id.rotaPre);
         criarRota = (FloatingActionButton) findViewById(R.id.criarRota);
-
+        progress = new ProgressDialog(this);
 
         rotaPreDefinida.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), " Vai mostrar a rota pre definita no mapa", Toast.LENGTH_SHORT).show();
+                final CarregarRotaTask task = new CarregarRotaTask(MainActivity.this);
+
+                progress.setTitle("Carregando");
+                progress.setMessage("Carregando Rota..");
+                progress.setCancelable(true); // disable dismiss by tapping outside of the dialog
+                progress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+
+                        if (task != null && task.getStatus() == AsyncTask.Status.RUNNING)
+                            task.cancel(true);
+                        progress.dismiss();
+                    }
+                });
+                progress.show();
+                task.execute();
+
+
             }
         });
         criarRota.setOnClickListener(new View.OnClickListener() {
@@ -106,20 +128,20 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        strTipoLogin = sharedPreferences.getString("TIPO","");
-        strVerificado = sharedPreferences.getString("Verificado","");
+        strTipoLogin = sharedPreferences.getString("TIPO", "");
+        strVerificado = sharedPreferences.getString("Verificado", "");
 
 
-        if(strTipoLogin.equals(Login_Facebook)){
-            if (AccessToken.getCurrentAccessToken() == null){
+        if (strTipoLogin.equals(Login_Facebook)) {
+            if (AccessToken.getCurrentAccessToken() == null) {
                 goLoginScreen();
             }
-            nome = sharedPreferences.getString("NOME","");
-            email = sharedPreferences.getString("EMAIL","");
-            id = sharedPreferences.getString("ID","");
-            if (strVerificado.equals("OK") == false){
+            nome = sharedPreferences.getString("NOME", "");
+            email = sharedPreferences.getString("EMAIL", "");
+            id = sharedPreferences.getString("ID", "");
+            if (strVerificado.equals("OK") == false) {
                 enviarUsuario();
             }
 
@@ -129,11 +151,11 @@ public class MainActivity extends AppCompatActivity
 
             //txtNome = (TextView) findViewById(R.id.nome);
             //txtNome.setText("Bem Vindo " + nome );
-        }else if(strTipoLogin.equals(Login_Google)){
+        } else if (strTipoLogin.equals(Login_Google)) {
             nome = getIntent().getStringExtra("NOME");
             email = getIntent().getStringExtra("EMAIL");
-            uriFotoGoogle = Uri.parse(sharedPreferences.getString("FOTO",""));
-            if (strVerificado.equals("OK") == false){
+            uriFotoGoogle = Uri.parse(sharedPreferences.getString("FOTO", ""));
+            if (strVerificado.equals("OK") == false) {
                 enviarUsuario();
             }
             //txtNome = (TextView) findViewById(R.id.nome);
@@ -156,10 +178,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-         mapFragment = (MapFragment) getFragmentManager()
+        mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
 
 
         if (mGoogleApiClient == null) {
@@ -182,8 +203,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private Location getLastLocation()
-    {
+    public Location getCurrentLocation() {
+        return mLastLocation;
+    }
+
+    private Location getLastLocation() {
 
         Location location = null;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -199,6 +223,7 @@ public class MainActivity extends AppCompatActivity
                 mGoogleApiClient);
         return location;
     }
+
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -235,7 +260,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+
+        if (mRequestingLocationUpdates) {
+            stopLocationUpdates();
+        }
     }
 
     @Override
@@ -277,7 +305,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case R.id.home:
                 //abrirFragment();
                 break;
@@ -305,32 +333,32 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void enviarUsuario(){
+    private void enviarUsuario() {
         try {
             usuario = new Usuario();
-            usuario.setNome(sharedPreferences.getString("NOME",""));
-            usuario.setSocialId(sharedPreferences.getString("ID",""));
-            usuario.setEmail(sharedPreferences.getString("EMAIL","Nao Encontrado"));
+            usuario.setNome(sharedPreferences.getString("NOME", ""));
+            usuario.setSocialId(sharedPreferences.getString("ID", ""));
+            usuario.setEmail(sharedPreferences.getString("EMAIL", "Nao Encontrado"));
             gson = new Gson();
             envioJson = gson.toJson(usuario);
             AcessoRest acessoRest = new AcessoRest();
             retorno = acessoRest.get("fnInserirUsuario/" + usuario.getNome() + "," + usuario.getEmail() + "," + usuario.getSocialId());
-            editor.putString("VERIFICADO","OK");
+            editor.putString("VERIFICADO", "OK");
             editor.commit();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     private void goLoginScreen() {
-        Intent intent = new Intent(this,LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
     public void logout() {
         LoginManager.getInstance().logOut();
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear().commit();
 
@@ -342,15 +370,14 @@ public class MainActivity extends AppCompatActivity
         map = googleMap;
         map.setMinZoomPreference(5);
         map.setMaxZoomPreference(25);
-      //  mLastLocation = getLastLocation();
+        //  mLastLocation = getLastLocation();
 
-      //  if (mLastLocation != null) {
-      //      updateLocation(mLastLocation);
-     //   }
+        //  if (mLastLocation != null) {
+        //      updateLocation(mLastLocation);
+        //   }
 
-        new  LoadLocationsOnMapAyncTask().execute();
+        new LoadLocationsOnMapAyncTask().execute();
     }
-
 
 
     @Override
@@ -369,15 +396,13 @@ public class MainActivity extends AppCompatActivity
                         updateLocation(location);
                     }
 
-
-                    if (!mRequestingLocationUpdates )
-                    {
+                    if (!mRequestingLocationUpdates) {
 
                         startLocationUpdates();
                     }
                 } else {
 
-                   Toast.makeText(this, "O aplicativo precisa da permissão de localização para rodar corretamente.", Toast.LENGTH_LONG);
+                    Toast.makeText(this, "O aplicativo precisa da permissão de localização para rodar corretamente.", Toast.LENGTH_LONG);
                 }
                 return;
             }
@@ -409,27 +434,41 @@ public class MainActivity extends AppCompatActivity
         mRequestingLocationUpdates = true;
     }
 
-    private void updateLocation(Location location)
-    {
+    public void updateLocation(Location location) {
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        if (userMarker == null)
-        {
-            userMarker =  map.addMarker(new MarkerOptions()
+        if (userMarker == null) {
+            userMarker = map.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("Eu")
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_user",100,100))));
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_user", 100, 100))));
+            updateCamera(latLng);
 
-        }
-        else {
+        } else {
             userMarker.setPosition(latLng);
         }
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-        map.moveCamera(cameraUpdate);
+        if (isOnRoute && latLng.latitude != mLastLocation.getLatitude() && latLng.longitude != mLastLocation.getLongitude()) {
+            updateCamera(latLng);
+        }
 
         mLastLocation = location;
+    }
 
+    private void updateCamera(LatLng latLng) {
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+        map.moveCamera(cameraUpdate);
+    }
+
+    public void startRoute() {
+        isOnRoute = true;
+        if (mLastLocation != null)
+            updateLocation(mLastLocation);
+
+        menuFab.close(true);
+        progress.dismiss();
+        //Toast.makeText(getApplicationContext(), " Rota iniciada!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -437,34 +476,39 @@ public class MainActivity extends AppCompatActivity
         mLastLocation = location;
 
         if (location != null)
-        updateLocation(location);
+            updateLocation(location);
 
     }
 
-    public Bitmap resizeMapIcons(String iconName, int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+    public Bitmap resizeMapIcons(String iconName, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", getPackageName()));
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
 
-    class LoadLocationsOnMapAyncTask extends AsyncTask<Void, Void, ContainerLocais>{
+    class LoadLocationsOnMapAyncTask extends AsyncTask<Void, Void, ContainerLocais> {
 
         @Override
         protected ContainerLocais doInBackground(Void... voids) {
 
-            AcessoRest acessoRest = new AcessoRest();
-            String json = acessoRest.get("fnConsultaLocais");
+            ContainerLocais containerLocais = null;
+            try {
+                AcessoRest acessoRest = new AcessoRest();
+                String json = acessoRest.get("fnConsultaLocais");
 
-            Gson gson = new Gson();
-            ContainerLocais containerLocais = gson.fromJson(json, ContainerLocais.class);
+                Gson gson = new Gson();
+                containerLocais = gson.fromJson(json, ContainerLocais.class);
 
+            } catch (Exception ex) {
+                throw ex;
+            }
             return containerLocais;
         }
 
         @Override
         protected void onPostExecute(ContainerLocais containerLocais) {
 
-            if(containerLocais != null) {
+            if (containerLocais != null) {
                 for (Local local : containerLocais.locais) {
 
                     LatLng latLng = new LatLng(local.getLat(), local.getLng());
