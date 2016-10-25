@@ -6,6 +6,7 @@ import com.loremipsum.recifeguide.util.CategoriaLocal;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by BREVE DEUS VEM on 24/09/2016.
@@ -25,11 +26,11 @@ public class Local extends EntidadeBase {
     @SerializedName("Imagem")
     private String imagem;
 
-    //@SerializedName("HorarioIniFuncionamento")
-    private Timestamp horarioInicio;
+    @SerializedName("HorarioIniFuncionamento")
+    private String horarioInicio;
 
-    //@SerializedName("HorarioFimFuncionamento")
-    private Timestamp horarioFim;
+    @SerializedName("HorarioFimFuncionamento")
+    private String horarioFim;
 
     @SerializedName("ApenasDiaUtil")
     private boolean apenasDiaUtil;
@@ -125,28 +126,28 @@ public class Local extends EntidadeBase {
     /**
      * @return the horarioInicio
      */
-    public Timestamp getHorarioInicio() {
+    public String getHorarioInicio() {
         return horarioInicio;
     }
 
     /**
      * @param horarioInicio the horarioInicio to set
      */
-    public void setHorarioInicio(Timestamp horarioInicio) {
+    public void setHorarioInicio(String horarioInicio) {
         this.horarioInicio = horarioInicio;
     }
 
     /**
      * @return the horarioFim
      */
-    public Timestamp getHorarioFim() {
+    public String getHorarioFim() {
         return horarioFim;
     }
 
     /**
      * @param horarioFim the horarioFim to set
      */
-    public void setHorarioFim(Timestamp horarioFim) {
+    public void setHorarioFim(String horarioFim) {
         this.horarioFim = horarioFim;
     }
 

@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -65,6 +66,9 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
                 Intent it = new Intent(getBaseContext(), LocalDetalheActivity.class);
                 it.putExtra("nome",local.getNome());
                 it.putExtra("descricao",local.getDescricao());
+                it.putExtra("imagem",local.getImagem());
+                it.putExtra("horarioAbertura",local.getHorarioInicio());
+                it.putExtra("horarioFechamento",local.getHorarioFim());
                 startActivity(it);
             }
         });
