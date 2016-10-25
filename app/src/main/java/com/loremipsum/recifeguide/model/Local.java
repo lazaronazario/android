@@ -1,7 +1,6 @@
 package com.loremipsum.recifeguide.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.loremipsum.recifeguide.EntidadeBase;
 import com.loremipsum.recifeguide.util.CategoriaLocal;
 
 import java.sql.Timestamp;
@@ -12,6 +11,9 @@ import java.util.ArrayList;
  */
 
 public class Local extends EntidadeBase {
+
+    @SerializedName("IdLocal")
+    private int id;
 
     @SerializedName("Latitude")
     private double lat;
@@ -48,7 +50,7 @@ public class Local extends EntidadeBase {
     }
 
     public Local(int id) {
-        this.setId(id);
+        this.id = id;
         this.listaDetalhes = new ArrayList<>();
     }
 
@@ -228,4 +230,15 @@ public class Local extends EntidadeBase {
     public void setLocalDetalhes(LocalDetalhes localDetalhes) {
         this.localDetalhes = localDetalhes;
     }*/
+
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return o!=null &&
+                (o instanceof  Local) &&
+                ((Local)o).id == this.id;
+
+    }
+
 }

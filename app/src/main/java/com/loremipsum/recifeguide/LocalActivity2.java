@@ -12,7 +12,7 @@ public class LocalActivity2 extends AppCompatActivity implements CliqueiNoLocalL
 
 
     ListView mListView;
-    private LocalAdapter2 mAdapter;
+    private LocalAdapter mAdapter;
     private ArrayList<Local> locais = null;
     //private ContainerLocais containerLocais = null;
     //private ArrayList<ContainerLocais> containerLocais;
@@ -36,7 +36,7 @@ public class LocalActivity2 extends AppCompatActivity implements CliqueiNoLocalL
 
     private void initViews() {
         mListView =  (ListView) findViewById(R.id.list_view);
-        mAdapter = new LocalAdapter2(this, locais);
+        mAdapter = new LocalAdapter(this, locais);
         mListView.setAdapter(mAdapter);
     }
 

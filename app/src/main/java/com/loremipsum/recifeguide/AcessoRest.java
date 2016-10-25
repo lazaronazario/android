@@ -12,7 +12,7 @@ import okhttp3.Response;
  * Created by Dannyllo on 28/09/2016.
  */
 public class AcessoRest {
-    private final String IP = "10.0.0.102";
+    private final String IP = "10.0.1.59:82";
     //private final String PORT = "";
     private StringBuilder url;
 

@@ -1,13 +1,13 @@
 package com.loremipsum.recifeguide.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.loremipsum.recifeguide.EntidadeBase;
 import com.loremipsum.recifeguide.util.TipoIdioma;
 
 /**
  * Created by BREVE DEUS VEM on 24/09/2016.
  */
 public class LocalDetalhes extends EntidadeBase{
+
 
     @SerializedName("Nome")
     private String nome;
