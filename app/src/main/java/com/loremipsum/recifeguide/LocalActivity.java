@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
+import com.loremipsum.recifeguide.tasks.CarregarLocaisTask;
 import com.loremipsum.recifeguide.util.CategoriaLocal;
 import com.loremipsum.recifeguide.util.EnumHelper;
 
@@ -26,8 +27,8 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
 
     ListView mListView;
     private LocalAdapter mAdapter;
-    private ArrayList<Local> mLocais = new ArrayList<>();
-    ConsultaLocaisTask mTask;
+    private ArrayList<Local> mLocais =  MainActivity.mLocais;
+    private ArrayList<Local> mLocaisFiltrados = new ArrayList<>();
     Enum filtroCategoria;
 
 
@@ -38,31 +39,24 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
 
         Intent intent = getIntent();
         CategoriaLocal categoria = (CategoriaLocal) intent.getSerializableExtra("categoriaLocal");
-        //Toast.makeText(getBaseContext(), categoria.toString(), Toast.LENGTH_SHORT).show();
         filtroCategoria = categoria;
-
 
         getSupportActionBar().setTitle("Lista de "+ EnumHelper.ObterDescricao(categoria));
 
-        if (mLocais.size() == 0 && mTask == null) {
-            mTask = new ConsultaLocaisTask();
-            mTask.execute();
-        }else if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING){
-            carregarLocais();
-        }else {
-            Toast.makeText(this, R.string.carregarLocais, Toast.LENGTH_LONG).show();
-        }
+        carregarLocais();
+
         initViews();
+
     }
 
     private void initViews() {
         mListView = (ListView) findViewById(R.id.list_view);
-        mAdapter = new LocalAdapter(this, mLocais);
+        mAdapter = new LocalAdapter(this, mLocaisFiltrados);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Local local = mLocais.get(i);
+                Local local = mLocaisFiltrados.get(i);
                 Intent it = new Intent(getBaseContext(), LocalDetalheActivity.class);
                 it.putExtra("nome",local.getNome());
                 it.putExtra("descricao",local.getDescricao());
@@ -77,56 +71,19 @@ public class LocalActivity extends AppCompatActivity implements CliqueiNoLocalLi
 
     @Override
     public void LocalFoiClicado(Local local) {
-
-    }
-
-    class ConsultaLocaisTask extends AsyncTask<Void, Void, ContainerLocais> {
-
-        @Override
-        protected ContainerLocais doInBackground(Void... voids) {
-
-            AcessoRest acessoRest = new AcessoRest();
-            String json = acessoRest.get("fnConsultaLocais");
-
-            try {
-                Gson gson = new Gson();
-                ContainerLocais containerLocais = gson.fromJson(json, ContainerLocais.class);
-
-                return containerLocais;
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(ContainerLocais containerLocais) {
-            mLocais.clear();
-            if (containerLocais != null) {
-                for (Local local : containerLocais.locais) {
-                    if (filtroCategoria == local.getCategoriaLocal()){
-                        mLocais.add(local);
-                   }
-                }
-                mAdapter.notifyDataSetChanged();
-            }
-        }
     }
 
     private void carregarLocais() {
 
-        ConnectivityManager connMgr = (ConnectivityManager)
-                this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            if (mTask == null) {
-                mTask = new ConsultaLocaisTask();
-                mTask.execute();
-            } else {
-                Toast.makeText(this, "sem conexao", Toast.LENGTH_LONG).show();
+        if(mLocais != null)
+        {
+            for (Local local : mLocais) {
+               if (filtroCategoria == local.getCategoriaLocal()){
+                    mLocaisFiltrados.add(local);
+               }
             }
+            // mAdapter.notifyDataSetChanged();
         }
+
     }
 }

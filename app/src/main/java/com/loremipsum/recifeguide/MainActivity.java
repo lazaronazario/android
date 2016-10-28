@@ -2,6 +2,7 @@ package com.loremipsum.recifeguide;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,8 +52,12 @@ import com.google.gson.Gson;
 import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
 import com.loremipsum.recifeguide.model.Usuario;
+import com.loremipsum.recifeguide.tasks.CarregarLocaisTask;
 import com.loremipsum.recifeguide.tasks.CarregarRotaTask;
 import com.loremipsum.recifeguide.util.AppConstants;
+import com.loremipsum.recifeguide.util.ImageHelper;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
@@ -86,6 +93,7 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton rotaPreDefinida, criarRota;
     public static boolean isOnRoute = false;
     ProgressDialog progress = null;
+    public static ArrayList<Local> mLocais = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -376,7 +384,7 @@ public class MainActivity extends AppCompatActivity
         //      updateLocation(mLastLocation);
         //   }
 
-        new LoadLocationsOnMapAyncTask().execute();
+        carregarLocaisNoMapa();
     }
 
 
@@ -441,7 +449,7 @@ public class MainActivity extends AppCompatActivity
             userMarker = map.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("Eu")
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("ic_user", 100, 100))));
+                    .icon(BitmapDescriptorFactory.fromBitmap(ImageHelper.resizeMapIcon(this,"ic_user", 100, 100))));
             updateCamera(latLng);
 
         } else {
@@ -480,49 +488,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public Bitmap resizeMapIcons(String iconName, int width, int height) {
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", getPackageName()));
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
-        return resizedBitmap;
-    }
+    private void carregarLocaisNoMapa()
+    {
 
-    class LoadLocationsOnMapAyncTask extends AsyncTask<Void, Void, ContainerLocais> {
-
-        @Override
-        protected ContainerLocais doInBackground(Void... voids) {
-
-            ContainerLocais containerLocais = null;
-            try {
-                AcessoRest acessoRest = new AcessoRest();
-                String json = acessoRest.get("fnConsultaLocais");
-
-                Gson gson = new Gson();
-                containerLocais = gson.fromJson(json, ContainerLocais.class);
-
-            } catch (Exception ex) {
-                throw ex;
-            }
-            return containerLocais;
+        ConnectivityManager connMgr = (ConnectivityManager)
+        getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new CarregarLocaisTask(this).execute();
+        } else {
+            Toast.makeText(this, "Sem conexão", Toast.LENGTH_LONG).show();
         }
 
-        @Override
-        protected void onPostExecute(ContainerLocais containerLocais) {
-
-            if (containerLocais != null) {
-                for (Local local : containerLocais.locais) {
-
-                    LatLng latLng = new LatLng(local.getLat(), local.getLng());
-
-                    Marker localMarker = map.addMarker(new MarkerOptions()
-                            .position(latLng)
-                            .title(local.getNome()));
-
-                    localMarker.setIcon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(local.getCategoriaLocal().toString().toLowerCase(), 50, 50)));
-                    localMarker.setPosition(latLng);
-
-                }
-            }
-        }
     }
-
 }
