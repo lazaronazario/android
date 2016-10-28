@@ -72,12 +72,32 @@ public class CarregarRotaTask extends AsyncTask<Void, Void, Rota[]> {
     @Override
     protected void onPostExecute(Rota[] rotas) {
 
+        Rota rota = rotas[0];
+        float menorDistancia = Float.MAX_VALUE;
+        Location currentLocation = activity.getCurrentLocation();
+
 
         if (rotas != null && rotas.length > 0) {
 
-            Rota rota = rotas[0];
 
-            Location currentLocation = activity.getCurrentLocation();
+            for (Rota item : rotas) {
+                Local localProximo = item.obterMelhorTrajeto(currentLocation)[0];
+
+                Location locLocal = new Location("l");
+                locLocal.setLatitude(localProximo.getLat());
+                locLocal.setLongitude(localProximo.getLng());
+
+                float dist = locLocal.distanceTo(currentLocation);
+                if (dist < menorDistancia)
+                {
+                    menorDistancia = dist;
+                    rota = item;
+                }
+
+            }
+
+
+
             Local[] locais = rota.obterMelhorTrajeto(currentLocation);
 
             LatLng start = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
@@ -105,8 +125,8 @@ public class CarregarRotaTask extends AsyncTask<Void, Void, Rota[]> {
 
             }
 
-
         }
+
     }
 
 
