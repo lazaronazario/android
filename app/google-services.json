@@ -12,8 +12,8 @@
         }
       },
       "oauth_client": [
-        {
-          "client_id": "181690891695-25mqgs0eqn4tbo13s38tkijs3l9vkhu1.apps.googleusercontent.com",
+        {		
+          "client_id": "587062480472-rfmvcg2cign8tagu9tojjltpuqhs44sr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.loremipsum.recifeguide",
@@ -21,7 +21,7 @@
           }
         },
         {
-          "client_id": "181690891695-gej1lsk40675q11uv2lb7l3qvj6ahnfa.apps.googleusercontent.com",
+          "client_id": "587062480472-rfmvcg2cign8tagu9tojjltpuqhs44sr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

@@ -1,5 +1,6 @@
 package com.loremipsum.recifeguide;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private GoogleSignInOptions signInOptions;
     private static final int REQUEST_CODE = 100;
     private GoogleSignInAccount account;
-
+    public static final String CLIENT_ID = "587062480472-rfmvcg2cign8tagu9tojjltpuqhs44sr.apps.googleusercontent.com" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +53,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
         }
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences sharedPreferences = RecifeGuideApp.getApplication().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         int status = sharedPreferences.getInt("STATUS", 0);
         String tipoLogin = sharedPreferences.getString("TIPO", "");
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -128,6 +129,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 Log.d("facebook erro", error.getMessage());
 
                 Toast.makeText(getApplicationContext(),R.string.error_login, Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -156,8 +158,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //String nome = perfil.getName();
         //String id = perfil.getId();
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
+        SharedPreferences sharedPreferences = RecifeGuideApp.getApplication().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
         editor.putInt("STATUS",1);
         editor.putString("TIPO","F");
         editor.putString("NOME",p_nome);
@@ -180,13 +183,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Intent intent = new Intent(LoginActivity.this,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME,MODE_PRIVATE);
+        SharedPreferences sharedPreferences = RecifeGuideApp.getApplication().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("STATUS",1);
-        editor.putString("TIPO","G");
-        editor.putString("NOME",usuario.getDisplayName());
-        editor.putString("ID",usuario.getId());
-        editor.putString("EMAIL",usuario.getEmail());
+        editor.clear();
+        editor.putInt("STATUS",1).commit();
+        editor.putString("TIPO","G").commit();
+        editor.putString("NOME",usuario.getDisplayName()).commit();
+        editor.putString("ID",usuario.getId()).commit();
+        editor.putString("EMAIL",usuario.getEmail()).commit();
         //editor.putString("FOTO",usuario.getPhotoUrl().toString());
         editor.commit();
 

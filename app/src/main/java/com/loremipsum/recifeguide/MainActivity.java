@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -23,9 +24,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,9 +60,11 @@ import com.loremipsum.recifeguide.tasks.CarregarRotaTask;
 import com.loremipsum.recifeguide.util.AppConstants;
 import com.loremipsum.recifeguide.util.ImageHelper;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
+import butterknife.internal.Utils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
@@ -100,6 +105,12 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        //sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        sharedPreferences = RecifeGuideApp.getApplication().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        strTipoLogin = sharedPreferences.getString("TIPO", "");
+        strVerificado = sharedPreferences.getString("Verificado", "");
 
         menuFab = (FloatingActionMenu) findViewById(R.id.fab);
         rotaPreDefinida = (FloatingActionButton) findViewById(R.id.rotaPre);
@@ -142,34 +153,7 @@ public class MainActivity extends AppCompatActivity
         strVerificado = sharedPreferences.getString("Verificado", "");
 
 
-        if (strTipoLogin.equals(Login_Facebook)) {
-            if (AccessToken.getCurrentAccessToken() == null) {
-                goLoginScreen();
-            }
-            nome = sharedPreferences.getString("NOME", "");
-            email = sharedPreferences.getString("EMAIL", "");
-            id = sharedPreferences.getString("ID", "");
-            if (strVerificado.equals("OK") == false) {
-                enviarUsuario();
-            }
 
-            //ppf = (ProfilePictureView) findViewById(R.id.fbProfilePicture);
-            //ppf.setVisibility(View.VISIBLE);
-            //ppf.setProfileId(id);
-
-            //txtNome = (TextView) findViewById(R.id.nome);
-            //txtNome.setText("Bem Vindo " + nome );
-        } else if (strTipoLogin.equals(Login_Google)) {
-            nome = getIntent().getStringExtra("NOME");
-            email = getIntent().getStringExtra("EMAIL");
-            uriFotoGoogle = Uri.parse(sharedPreferences.getString("FOTO", ""));
-            if (strVerificado.equals("OK") == false) {
-                enviarUsuario();
-            }
-            //txtNome = (TextView) findViewById(R.id.nome);
-            //txtNome.setText("Bem Vindo " + nome + "   " + email);
-
-        }
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -251,6 +235,59 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        sharedPreferences = RecifeGuideApp.getApplication().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
+        editor = sharedPreferences.edit();
+        strTipoLogin = sharedPreferences.getString("TIPO", "");
+        strVerificado = sharedPreferences.getString("Verificado", "");
+        if (strTipoLogin.equals(Login_Facebook)) {
+            if (AccessToken.getCurrentAccessToken() == null) {
+                goLoginScreen();
+            }
+            nome = sharedPreferences.getString("NOME", "");
+            email = sharedPreferences.getString("EMAIL", "");
+            id = sharedPreferences.getString("ID", "");
+
+            txtNome = (TextView) findViewById(R.id.meu_nome);
+            txtNome.setText(nome);
+
+            txtEmail = (TextView) findViewById(R.id.meu_email);
+            txtEmail.setText(email);
+
+            if (strVerificado.equals("OK") == false) {
+                enviarUsuario();
+            }
+
+           ProfilePictureView ppf = (ProfilePictureView) findViewById(R.id.fbImage);
+            ppf.setVisibility(View.VISIBLE);
+            ppf.setProfileId(id);
+
+            //txtNome = (TextView) findViewById(R.id.nome);
+            //txtNome.setText("Bem Vindo " + nome );
+        } else if (strTipoLogin.equals(Login_Google)) {
+            nome = getIntent().getStringExtra("NOME");
+            email = getIntent().getStringExtra("EMAIL");
+            //uriFotoGoogle = Uri.parse(sharedPreferences.getString("FOTO", ""));
+
+            txtNome = (TextView) findViewById(R.id.meu_nome);
+            txtNome.setText(nome);
+
+            txtEmail = (TextView) findViewById(R.id.meu_email);
+            txtEmail.setText(email);
+
+
+            new DownloadImageTask((ImageView) findViewById(R.id.gglImage))
+                    .execute(sharedPreferences.getString("FOTO", ""));
+
+            if (strVerificado.equals("OK") == false) {
+                enviarUsuario();
+            }
+            //txtNome = (TextView) findViewById(R.id.nome);
+            //txtNome.setText("Bem Vindo " + nome + "   " + email);
+
+        }
+
         return true;
     }
 
@@ -366,7 +403,8 @@ public class MainActivity extends AppCompatActivity
 
     public void logout() {
         LoginManager.getInstance().logOut();
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        //SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences sharedPreferences = RecifeGuideApp.getApplication().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear().commit();
 
@@ -500,5 +538,31 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, "Sem conexão", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setVisibility(View.VISIBLE);
+            bmImage.setImageBitmap(result);
+        }
     }
 }
