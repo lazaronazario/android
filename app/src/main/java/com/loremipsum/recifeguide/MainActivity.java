@@ -146,6 +146,44 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+            
+         //check-in
+        FABcheckinFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Bundle params = new Bundle();
+
+                    params.putString("message", "Eu estou aqui nesse Lugar!");
+
+                    JSONObject coordinates = new JSONObject();
+
+                    coordinates.put("latitude", -8.097022);
+                    coordinates.put("longitude", -34.936457);
+
+                    params.putString("coordinates", coordinates.toString());
+
+                    GraphRequest request = GraphRequest.newPostRequest(
+                            AccessToken.getCurrentAccessToken(),
+                            "me/checkin",
+                            coordinates,
+                            new GraphRequest.Callback() {
+                        @Override
+                        public void onCompleted(GraphResponse graphResponse) {
+
+                        }
+                    });
+
+                    params.putString("fields", "id, name, email, gender, birthday");
+
+                    request.setParameters(params);
+                    request.executeAsync();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+             //fim check-in
 
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         editor = sharedPreferences.edit();
