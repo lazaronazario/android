@@ -66,7 +66,16 @@
         fab:menu_shadowXOffset="1dp"
         fab:menu_shadowYOffset="4dp"
         fab:menu_showShadow="true">
-
+        
+        //botão check-in
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/FABcheckinFacebook"
+            android:src="@drawable/checkinfacebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_label="@string/checkinFacebook"
+            fab:fab_size="mini" />
+        //fim botão check-in
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/rotaPre"
             android:layout_width="wrap_content"
