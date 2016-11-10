@@ -12,6 +12,7 @@
     <string name="rotaPreDefinida">Rota pré-definida</string>
     <string name="opcoesDeRota">Escolha sua opção</string>
     <string name="carregarLocais">nao foi possivel carregar locais</string>
+    <string name="checkinFacebook">Check-in</string>//Check-in //botão
 
 
     <string name="action_settings">Settings</string>
