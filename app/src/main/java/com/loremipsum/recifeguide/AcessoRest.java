@@ -12,10 +12,10 @@ import okhttp3.Response;
  * Created by Dannyllo on 28/09/2016.
  */
 public class AcessoRest {
-    private final String IP = "10.0.0.102";
+    //private final String IP = "10.0.0.102";
+    private final String IP = "192.168.71.2";
     //private final String PORT = "";
     private StringBuilder url;
-
 
     public String get(String complemento){
         url = new StringBuilder();
