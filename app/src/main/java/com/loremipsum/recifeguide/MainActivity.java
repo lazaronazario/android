@@ -15,7 +15,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -33,8 +32,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
@@ -52,7 +59,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
-import com.loremipsum.recifeguide.model.ContainerLocais;
 import com.loremipsum.recifeguide.model.Local;
 import com.loremipsum.recifeguide.model.Usuario;
 import com.loremipsum.recifeguide.tasks.CarregarLocaisTask;
@@ -60,11 +66,19 @@ import com.loremipsum.recifeguide.tasks.CarregarRotaTask;
 import com.loremipsum.recifeguide.util.AppConstants;
 import com.loremipsum.recifeguide.util.ImageHelper;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.internal.Utils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
@@ -95,10 +109,17 @@ public class MainActivity extends AppCompatActivity
     Marker userMarker;
     boolean mRequestingLocationUpdates = false;
     FloatingActionMenu menuFab;
-    FloatingActionButton rotaPreDefinida, criarRota;
+    //Adicionado o botão de checkin
+    FloatingActionButton rotaPreDefinida, criarRota, FABcheckinFacebook;
     public static boolean isOnRoute = false;
     ProgressDialog progress = null;
     public static ArrayList<Local> mLocais = null;
+    //Adicionado callback da SDK do facebook
+    CallbackManager callbackManager;
+    //Adicionado caixa de dialogo da SDK do facebook
+    ShareDialog shareDialog;
+    //Variavel que deve carregar latitude e longitudade para ser utilizada no check in
+    LatLng latitudelongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +136,12 @@ public class MainActivity extends AppCompatActivity
         menuFab = (FloatingActionMenu) findViewById(R.id.fab);
         rotaPreDefinida = (FloatingActionButton) findViewById(R.id.rotaPre);
         criarRota = (FloatingActionButton) findViewById(R.id.criarRota);
+        FABcheckinFacebook = (FloatingActionButton) findViewById(R.id.FABcheckinFacebook);
         progress = new ProgressDialog(this);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
 
         rotaPreDefinida.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -146,53 +172,22 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-            
-         //check-in
+
+        //check-in
+        //Dado ao botão de check in o listener da ação.
         FABcheckinFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                try {
-                    Bundle params = new Bundle();
-
-                    params.putString("message", "Eu estou aqui nesse Lugar!");
-
-                    JSONObject coordinates = new JSONObject();
-
-                    coordinates.put("latitude", -8.097022);
-                    coordinates.put("longitude", -34.936457);
-
-                    params.putString("coordinates", coordinates.toString());
-
-                    GraphRequest request = GraphRequest.newPostRequest(
-                            AccessToken.getCurrentAccessToken(),
-                            "me/checkin",
-                            coordinates,
-                            new GraphRequest.Callback() {
-                        @Override
-                        public void onCompleted(GraphResponse graphResponse) {
-
-                        }
-                    });
-
-                    params.putString("fields", "id, name, email, gender, birthday");
-
-                    request.setParameters(params);
-                    request.executeAsync();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            public void onClick(View view) {
+                //Chamada para o metodo interno de compartilhamento, passando como paramentro a shared dialog;
+                SharedLocation(shareDialog);
             }
         });
-             //fim check-in
+        //fim check-in
 
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         editor = sharedPreferences.edit();
         strTipoLogin = sharedPreferences.getString("TIPO", "");
         strVerificado = sharedPreferences.getString("Verificado", "");
-
-
-
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -220,6 +215,24 @@ public class MainActivity extends AppCompatActivity
                     .addApi(LocationServices.API)
                     .build();
         }
+
+
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Log.i("Share", "Success");
+            }
+
+            @Override
+            public void onCancel() {
+                Log.i("Share", "Cancel");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.i("Share", "Error" + error.toString()); //Failed to generate preview for user
+            }
+        });
 
     }
 
@@ -521,6 +534,7 @@ public class MainActivity extends AppCompatActivity
     public void updateLocation(Location location) {
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        latitudelongitude = latLng;
         if (userMarker == null) {
             userMarker = map.addMarker(new MarkerOptions()
                     .position(latLng)
@@ -564,6 +578,27 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    //Metodo para executar o compartilhamento
+    private void SharedLocation(ShareDialog shareDialog){
+
+        //Classe interna de task (cria thread secundaria)
+        Shared sharedtask = new Shared();
+        //Verifica se a latitude e longitude ja foi carregada, caso nao tenha sido apresenta toast e nao continua a execução.
+        if(latitudelongitude == null){
+            Toast.makeText(getApplicationContext(), "Aguarde enquanto o GPS atualiza sua localização", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //Execuya a thread passando latitude e longitude
+        sharedtask.execute(String.valueOf(latitudelongitude.latitude), String.valueOf(latitudelongitude.longitude));
+
+    }
+
     private void carregarLocaisNoMapa()
     {
 
@@ -603,4 +638,87 @@ public class MainActivity extends AppCompatActivity
             bmImage.setImageBitmap(result);
         }
     }
+
+    private class Shared extends AsyncTask<String, Void, JSONObject> {
+
+        //A execução do compartilhamento começa quando busca os lugares mais proximos da posição atual
+        protected JSONObject doInBackground(String... latlong) {
+
+            String acessotoken = "EAACEdEose0cBAFzBZCz6ekK6L2dznwDw0gh4doXp44ZC1lToBOqNGfzbuSEkTbz0oQVCxtlKDWO7IeZAZAdyx4hVkQZCtVHZBNSa1VYa9bIhebZBMO9dEOGViEki3uG6JU0ZBQyaWHhf7ZCVatsgAwaBTvZAv44nbsHBmVGO2WUowRhQZDZD";
+            String ditancia = "1000";
+            JSONObject retorno = null;
+            //Busca direto da API facebook
+            String urldisplay = "https://graph.facebook.com/search?type=place&center="+latlong[0]+","+latlong[1]+"&distance="+ditancia+"&access_token="+acessotoken;
+            HttpURLConnection urlConnection = null;
+
+                try {
+                    URL url = new URL(urldisplay);
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+
+                    urlConnection.connect();
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(urlConnection.getInputStream()));
+                    String line;
+                    StringBuffer sb = new StringBuffer();
+
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    in.close();
+                    retorno = new JSONObject(sb.toString());
+
+                } catch (IOException e) {
+
+                    Log.e("Error", e.getMessage());
+
+                } catch (Exception e) {
+
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
+
+                } finally{
+
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+            return retorno;
+        }
+
+        protected void onPostExecute(JSONObject result) {
+
+            //Ao completar o processo, pega o primeiro local utilizando seu ID place, e aplica ao compartilhamento
+            try {
+                JSONArray jsonArray = result.getJSONArray("data");
+                Log.e("retono", result.toString());
+
+                String placeid = null;
+                //Apos achar o primeiro ID, o loop é parado.
+                for (int i=0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    placeid = jsonObject.getString("id");
+                    break;
+                }
+
+                //Verifica se pode mostrar a caixa de dialogo
+                if (ShareDialog.canShow(ShareLinkContent.class)) {
+                    //A função do compartilhamento em se
+                    ShareContent linkContent = new ShareLinkContent.Builder()
+                            .setContentTitle("Hello Facebook")
+                            .setPlaceId(placeid)
+                            .setContentDescription("The 'Hello Facebook' sample  showcases simple Facebook integration")
+                            .setContentUrl(Uri.parse("http://www.google.com"))
+                            .build();
+                    shareDialog.show(linkContent);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 }
